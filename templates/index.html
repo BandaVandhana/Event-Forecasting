@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NYC Event-Aware Price Predictor</title>
+
+  <!-- Flatpickr CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+    h1 { color: #003366; }
+
+    .info-box {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 420px;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background: #003366;
+      color: white;
+    }
+
+    form {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 360px;
+    }
+
+    label { display: block; margin-top: 10px; font-weight: 500; }
+    input, select {
+      width: 100%; padding: 8px;
+      margin-top: 4px; border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 15px;
+      background-color: #003366;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+    }
+    button:hover { background-color: #0055a5; }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e0f0ff;
+      border-radius: 8px;
+      color: #003366;
+      width: 360px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🏙️ NYC Event-Aware Price Predictor</h1>
+
+  <!-- Event Influence Reference Box -->
+  <div class="info-box">
+    <h3>🎭 Event Influence Scores</h3>
+    <p>Use this table to pick the correct <b>Average Event Influence</b> value.</p>
+
+    <table>
+      <tr><th>Event Category</th><th>Influence Value</th></tr>
+      <tr><td>Music</td><td>1.0</td></tr>
+      <tr><td>Sports</td><td>0.9</td></tr>
+      <tr><td>Arts & Theatre</td><td>0.8</td></tr>
+      <tr><td>Miscellaneous</td><td>0.5</td></tr>
+      <tr><td>Undefined</td><td>0.3</td></tr>
+    </table>
+  </div>
+
+  <!-- Prediction Form -->
+  <form action="/predict" method="post">
+
+    <label for="area">Select Area</label>
+    <select name="area" id="area">
+      <option value="manhattan">Manhattan</option>
+      <option value="brooklyn">Brooklyn</option>
+      <option value="queens">Queens</option>
+      <option value="bronx">Bronx</option>
+      <option value="staten island">Staten Island</option>
+    </select>
+
+    <label for="event_count">Event Count</label>
+    <input type="number" name="event_count" id="event_count" required>
+
+    <label for="avg_influence">Average Event Influence</label>
+    <input type="number" name="avg_influence" id="avg_influence" step="0.1" required>
+
+    <label for="availability_365">Availability (days/year)</label>
+    <input type="number" name="availability_365" id="availability_365" value="180">
+
+    <label for="minimum_nights">Minimum Nights</label>
+    <input type="number" name="minimum_nights" id="minimum_nights" value="2">
+
+    <label for="number_of_reviews">Number of Reviews</label>
+    <input type="number" name="number_of_reviews" id="number_of_reviews" value="10">
+
+    <label for="reviews_per_month">Reviews Per Month</label>
+    <input type="number" name="reviews_per_month" id="reviews_per_month" step="0.1" value="1.0">
+
+    <label for="calculated_host_listings_count">Host Listings Count</label>
+    <input type="number" name="calculated_host_listings_count" id="calculated_host_listings_count" value="1">
+
+    <!-- Fancy Calendar -->
+    <label for="datePicker">Select Date</label>
+    <input type="text" id="datePicker" name="date" placeholder="Choose date">
+
+    <button type="submit">Predict Price</button>
+  </form>
+
+  {% if prediction %}
+    <div class="result">
+      💰 Predicted Adjusted Price: <b>${{ prediction }}</b>
+    </div>
+  {% elif error %}
+    <div class="result" style="background:#ffdddd; color:#900;">
+      ⚠️ Error: {{ error }}
+    </div>
+  {% endif %}
+
+  <!-- Flatpickr Script -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <script>
+    // Initialize calendar only
+    flatpickr("#datePicker", {
+      dateFormat: "Y-m-d",
+      altInput: true,
+      altFormat: "F j, Y",
+      defaultDate: new Date(),
+      monthSelectorType: "dropdown",
+      yearSelectorType: "dropdown"
+    });
+  </script>
+
+</body>
+</html>
